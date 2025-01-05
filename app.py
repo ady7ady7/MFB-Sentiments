@@ -1,11 +1,20 @@
 from flask import Flask, render_template, jsonify
-import threading
+from threading import Thread
 import scraper
+import time
 
 app = Flask(__name__)
 
+def scraper_loop():
+    while True:
+        print("[INFO] Uruchamianie scrapera...")
+        scraper.run_scraper()
+        time.sleep(300)  # Odczekaj 5 minut przed ponownym uruchomieniem
+
+@app.before_first_request
 def start_scraper():
-    threading.Thread(target=scraper.run_scraper, daemon=True).start()
+    print("[INFO] Scraper uruchomiony przed pierwszym requestem")
+    Thread(target=scraper_loop, daemon=True).start()
 
 @app.route("/")
 def index():
@@ -19,5 +28,4 @@ def status():
     })
 
 if __name__ == "__main__":
-    start_scraper()
     app.run(debug=True)
