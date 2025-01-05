@@ -19,4 +19,5 @@ def status():
     })
 
 if __name__ == "__main__":
+    start_scraper()
     app.run(debug=True)
