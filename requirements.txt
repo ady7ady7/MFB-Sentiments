@@ -1,1 +1,5 @@
-pip install requests beautifulsoup4 matplotlib flask
+Flask
+requests
+beautifulsoup4
+plotly
+matplotlib
