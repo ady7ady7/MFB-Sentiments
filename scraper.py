@@ -83,6 +83,7 @@ def update_all_plots():
 
 
 def run_scraper():
+    print("[INFO] Scraper został uruchomiony!")
     global request_counter
     global last_request_time
 
