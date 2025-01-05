@@ -86,40 +86,42 @@ def run_scraper():
     global request_counter
     global last_request_time
 
-    while True:
-        for asset in asset_list:
-            url = f"https://www.myfxbook.com/community/outlook/{asset}"
-            headers = {"User-Agent": "Mozilla/5.0"}
-            try:
-                response = requests.get(url, headers=headers)
-                request_counter += 1  # Zwiększamy licznik przy każdym zapytaniu
-                response.raise_for_status()
-                soup = BeautifulSoup(response.text, 'html.parser')
-                table_rows = soup.find_all('tr')
+    for asset in asset_list:
+        url = f"https://www.myfxbook.com/community/outlook/{asset}"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        try:
+            response = requests.get(url, headers=headers)
+            request_counter += 1  # Zwiększamy licznik przy każdym zapytaniu
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            table_rows = soup.find_all('tr')
 
-                new_long = None
-                new_short = None
+            new_long = None
+            new_short = None
 
-                for row in table_rows:
-                    cells = row.find_all('td')
-                    if len(cells) > 1:
-                        if 'Long' in cells[0].text.strip():
-                            new_long = int(cells[1].text.strip().replace('%', ''))
-                        elif 'Short' in cells[0].text.strip():
-                            new_short = int(cells[1].text.strip().replace('%', ''))
+            for row in table_rows:
+                cells = row.find_all('td')
+                if len(cells) > 1:
+                    if 'Long' in cells[0].text.strip():
+                        new_long = int(cells[1].text.strip().replace('%', ''))
+                    elif 'Short' in cells[0].text.strip():
+                        new_short = int(cells[1].text.strip().replace('%', ''))
 
-                if new_long is not None and new_short is not None:
-                    current_time = datetime.now().strftime("%H:%M")
-                    time_stamps[asset].append(current_time)
-                    long_values[asset].append(new_long)
-                    short_values[asset].append(new_short)
+            if new_long is not None and new_short is not None:
+                current_time = datetime.now().strftime("%H:%M")
+                time_stamps[asset].append(current_time)
+                long_values[asset].append(new_long)
+                short_values[asset].append(new_short)
 
-            except requests.exceptions.HTTPError as http_err:
-                print(f"HTTPError: {http_err}, Request count before error: {request_counter}")
-            except Exception as e:
-                print(f"Error occurred for {asset}: {e}")
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTPError: {http_err}, Request count before error: {request_counter}")
+        except Exception as e:
+            print(f"Error occurred for {asset}: {e}")
 
         
         last_request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         update_all_plots()
         time.sleep(300)
+
+if __name__ == "__main__":
+    run_scraper()
