@@ -78,7 +78,7 @@ def update_all_plots():
             '<div style="width: 100%; height: 100%;" id="'
         )
 
-        with open(f"static/{asset}_plot.html", "w") as f:
+        with open(f"/tmp/{asset}_plot.html", "w") as f:
             f.write(html_code)
 
 
