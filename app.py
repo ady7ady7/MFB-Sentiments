@@ -4,8 +4,8 @@ import scraper
 
 app = Flask(__name__)
 
-#def start_scraper():
-    #threading.Thread(target=scraper.run_scraper, daemon=True).start()
+def start_scraper():
+    threading.Thread(target=scraper.run_scraper, daemon=True).start()
 
 @app.route("/")
 def index():
