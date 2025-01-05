@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 asset_list = ["EURUSD","GBPUSD", "USDJPY", "AUDUSD", "XAUUSD"]
 request_counter = 0
 last_request_time = None 
+generate_initial_plots()
 
 # Słowniki do przechowywania danych dla każdego symbolu
 time_stamps = {asset: [] for asset in asset_list}
@@ -81,6 +82,16 @@ def update_all_plots():
         with open(f"static/{asset}_plot.html", "w") as f:
             f.write(html_code)
 
+def generate_initial_plots():
+    for asset in asset_list:
+        fig = go.Figure()
+        fig.update_layout(
+            xaxis_title="Time",
+            yaxis_title="Percentage",
+            paper_bgcolor="#1f1f1f",
+            plot_bgcolor="#2d2d2d"
+        )
+        fig.write_html(f"static/{asset}_plot.html", include_plotlyjs="cdn", full_html=False)
 
 def run_scraper():
     global request_counter
