@@ -96,6 +96,9 @@ def run_scraper():
             soup = BeautifulSoup(response.text, 'html.parser')
             table_rows = soup.find_all('tr')
 
+            print(f"[INFO] Request do {url} zakończony sukcesem! Status Code: {response.status_code}")
+
+
             new_long = None
             new_short = None
 
