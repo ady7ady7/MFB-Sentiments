@@ -5,10 +5,10 @@ import scraper
 app = Flask(__name__)
 
 # Uruchomienie scrapera w tle
-def start_scraper():
-    threading.Thread(target=scraper.run_scraper, daemon=True).start()
+#def start_scraper():
+    #threading.Thread(target=scraper.run_scraper, daemon=True).start()
 
-start_scraper()  # Scraper uruchamiany przy starcie aplikacji
+#start_scraper()  # Scraper uruchamiany przy starcie aplikacji
 
 @app.route("/")
 def index():
@@ -28,4 +28,5 @@ def debug():
 
 
 if __name__ == "__main__":
+    scraper.run_scraper()
     app.run(debug=True)
