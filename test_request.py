@@ -19,22 +19,29 @@ def test_requests():
 
             # Szczegóły odpowiedzi
             print(f"[INFO] Status Code: {response.status_code}")
-            print(f"[INFO] Nagłówki odpowiedzi:\n{response.headers}")
-            print(f"[INFO] Czas odpowiedzi: {response.elapsed.total_seconds()} sekund")
-            print(f"[INFO] Długość treści odpowiedzi: {len(response.text)} znaków")
-            print(f"[INFO] Podgląd treści HTML (pierwsze 500 znaków):\n{response.text[:500]}")
-
-            # Parsowanie HTML (sprawdzenie, czy struktura tabeli istnieje)
             soup = BeautifulSoup(response.text, 'html.parser')
-            table_rows = soup.find_all('tr')
 
-            if table_rows:
-                print(f"[INFO] Znaleziono {len(table_rows)} wierszy w tabeli.")
+            # Szukanie wartości Long i Short w tabeli
+            table_rows = soup.find_all('tr')
+            long_percentage = None
+            short_percentage = None
+
+            for row in table_rows:
+                cells = row.find_all('td')
+                if len(cells) > 1:
+                    if 'Long' in cells[0].text.strip():
+                        long_percentage = cells[1].text.strip()
+                    elif 'Short' in cells[0].text.strip():
+                        short_percentage = cells[1].text.strip()
+
+            # Wyświetlenie wyników
+            if long_percentage and short_percentage:
+                print(f"[RESULT] {asset} - Long: {long_percentage}, Short: {short_percentage}")
             else:
-                print(f"[WARNING] Brak wierszy tabeli dla {asset}. Struktura HTML może być inna.")
+                print(f"[WARNING] Nie znaleziono wartości Long/Short dla {asset}.")
 
         except requests.exceptions.HTTPError as http_err:
-            print(f"[ERROR] Błąd HTTP: {http_err}")
+            print(f"[ERROR] Błąd HTTP dla {asset}: {http_err}")
         except requests.exceptions.ConnectionError:
             print(f"[ERROR] Problem z połączeniem z {url}")
         except requests.exceptions.Timeout:
@@ -44,3 +51,4 @@ def test_requests():
 
 if __name__ == "__main__":
     test_requests()
+
