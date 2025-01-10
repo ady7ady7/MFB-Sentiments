@@ -58,3 +58,4 @@ def status():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Pobieranie portu ze zmiennej środowiskowej lub domyślnie 5000
     app.run(host="0.0.0.0", port=port, debug=False)  # Nasłuch na 0.0.0.0 dla wszystkich adresów sieciowych
+
