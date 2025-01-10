@@ -4,12 +4,14 @@ import scraper
 
 app = Flask(__name__)
 
+# Proste uruchamianie scrapera w osobnym wątku
 def start_scraper():
-    threading.Thread(target=scraper.run_scraper, daemon=True).start()
+    print("[INFO] Uruchamianie scrapera...")
+    thread = threading.Thread(target=scraper.run_scraper, daemon=True)
+    thread.start()
 
-@app.before_first_request
-def start():
-    start_scraper()
+# Uruchamianie scraperów przy starcie aplikacji
+start_scraper()
 
 @app.route("/")
 def index():
@@ -19,8 +21,8 @@ def index():
 def status():
     return jsonify({
         "last_update": scraper.last_request_time,
-        "refresh_interval": 5
+        "refresh_interval": 5  # Interwał odświeżania w minutach
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
