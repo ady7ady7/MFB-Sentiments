@@ -5,54 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentymenty MYFXBOOK Live</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .long {
-            color: lime;
-            font-weight: bold;
-        }
-        .short {
-            color: red;
-            font-weight: bold;
-        }
-        .sentiment-data {
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Sentymenty MYFXBOOK Live</h1>
-        <p>Ostatnia aktualizacja danych: <span id="last-update">Ładowanie...</span></p>
+        <p>Wykresy aktualizują się co 5 minut</p>
 
-        <div id="sentiment-container">
+        <div id="plots-container">
             {% for asset in assets %}
-                <div class="sentiment-data">
-                    <h3>{{ asset }}</h3>
-                    <p>Long: <span class="long">{{ current_values[asset]["long"] }}</span></p>
-                    <p>Short: <span class="short">{{ current_values[asset]["short"] }}</span></p>
+                <div class="plot-container">
+                    <h2>{{ asset }}</h2>
+                    <div id="plot-{{ asset }}"></div>
                 </div>
             {% endfor %}
         </div>
     </div>
 
     <script>
-        async function fetchStatus() {
-            try {
-                const response = await fetch("/status");
-                const data = await response.json();
-                document.getElementById('last-update').textContent = data.last_update || "Brak danych";
-            } catch (error) {
-                console.error("Error fetching status:", error);
-            }
+        async function fetchPlotData(asset) {
+            const response = await fetch(`/get-plot-data/${asset}`);
+            const data = await response.json();
+            Plotly.newPlot(`plot-${asset}`, data.data, data.layout);
         }
 
-        // Odpytuj serwer co 5 sekund
-        setInterval(fetchStatus, 5000);
-        fetchStatus();
+        function updateAllPlots() {
+            const assets = {{ assets | tojson }};
+            assets.forEach(asset => fetchPlotData(asset));
+        }
+
+        // Aktualizuj wykresy co 5 minut
+        setInterval(updateAllPlots, 300000);  // 300000 ms = 5 minut
+        updateAllPlots();  // Wywołanie przy starcie
     </script>
 </body>
 </html>
-
