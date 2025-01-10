@@ -5,14 +5,12 @@ from datetime import datetime
 
 # Lista symboli
 asset_list = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "XAUUSD"]
-request_counter = 0
 last_request_time = None
 
 # Aktualne wartości do wyświetlania
 current_values = {asset: {"long": 0, "short": 0} for asset in asset_list}
 
 def run_scraper():
-    global request_counter
     global last_request_time
 
     while True:
@@ -21,7 +19,6 @@ def run_scraper():
             headers = {"User-Agent": "Mozilla/5.0"}
             try:
                 response = requests.get(url, headers=headers)
-                request_counter += 1
                 response.raise_for_status()
 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -39,9 +36,8 @@ def run_scraper():
                             new_short = int(cells[1].text.strip().replace('%', ''))
 
                 if new_long is not None and new_short is not None:
-                    current_time = datetime.now().strftime("%H:%M:%S")
                     current_values[asset] = {"long": new_long, "short": new_short}
-                    print(f"[INFO] {asset} - Long: {new_long}%, Short: {new_short}% (Czas: {current_time})")
+                    print(f"[INFO] {asset} - Long: {new_long}%, Short: {new_short}%")
                 else:
                     print(f"[WARNING] Nie znaleziono danych dla {asset}")
 
@@ -51,5 +47,5 @@ def run_scraper():
                 print(f"[ERROR] Inny błąd dla {asset}: {e}")
 
         last_request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        time.sleep(300)  # Odczekaj 5 minut przed kolejną aktualizacją
+        time.sleep(300)
 
