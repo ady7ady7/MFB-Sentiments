@@ -22,5 +22,10 @@ def status():
         "last_update": scraper.last_request_time
     })
 
+@app.route("/debug")
+def debug():
+    return jsonify(scraper.current_values)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
