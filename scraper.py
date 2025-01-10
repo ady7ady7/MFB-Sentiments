@@ -5,12 +5,16 @@ from datetime import datetime
 
 # Lista symboli
 asset_list = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "XAUUSD"]
+request_counter = 0
 last_request_time = None
 
-# Aktualne wartości do wyświetlania na stronie
-current_values = {asset: {"long": "N/A", "short": "N/A"} for asset in asset_list}
+# Dane do wykresów
+time_stamps = {asset: [] for asset in asset_list}
+long_values = {asset: [] for asset in asset_list}
+short_values = {asset: [] for asset in asset_list}
 
 def run_scraper():
+    global request_counter
     global last_request_time
 
     while True:
@@ -19,6 +23,7 @@ def run_scraper():
             headers = {"User-Agent": "Mozilla/5.0"}
             try:
                 response = requests.get(url, headers=headers)
+                request_counter += 1  # Zwiększamy licznik przy każdym zapytaniu
                 response.raise_for_status()
 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -31,15 +36,19 @@ def run_scraper():
                     cells = row.find_all('td')
                     if len(cells) > 1:
                         if 'Long' in cells[0].text.strip():
-                            new_long = cells[1].text.strip()
+                            new_long = int(cells[1].text.strip().replace('%', ''))
                         elif 'Short' in cells[0].text.strip():
-                            new_short = cells[1].text.strip()
+                            new_short = int(cells[1].text.strip().replace('%', ''))
 
-                if new_long and new_short:
-                    current_values[asset] = {"long": new_long, "short": new_short}
-                    print(f"[INFO] {asset} - Long: {new_long}, Short: {new_short}")
+                if new_long is not None and new_short is not None:
+                    current_time = datetime.now().strftime("%H:%M")
+                    time_stamps[asset].append(current_time)
+                    long_values[asset].append(new_long)
+                    short_values[asset].append(new_short)
+
+                    print(f"[INFO] {asset} - Long: {new_long}%, Short: {new_short}%")
                 else:
-                    print(f"[WARNING] Brak danych dla {asset}.")
+                    print(f"[WARNING] Nie znaleziono danych dla {asset}.")
 
             except requests.exceptions.HTTPError as http_err:
                 print(f"[ERROR] Błąd HTTP dla {asset}: {http_err}")
