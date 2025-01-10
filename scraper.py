@@ -5,7 +5,6 @@ from datetime import datetime
 
 # Lista symboli
 asset_list = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "XAUUSD"]
-request_counter = 0
 last_request_time = None
 
 # Dane do wykresów
@@ -14,7 +13,6 @@ long_values = {asset: [] for asset in asset_list}
 short_values = {asset: [] for asset in asset_list}
 
 def run_scraper():
-    global request_counter
     global last_request_time
 
     while True:
@@ -23,7 +21,6 @@ def run_scraper():
             headers = {"User-Agent": "Mozilla/5.0"}
             try:
                 response = requests.get(url, headers=headers)
-                request_counter += 1  # Zwiększamy licznik przy każdym zapytaniu
                 response.raise_for_status()
 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -48,12 +45,16 @@ def run_scraper():
 
                     print(f"[INFO] {asset} - Long: {new_long}%, Short: {new_short}%")
                 else:
-                    print(f"[WARNING] Nie znaleziono danych dla {asset}.")
+                    print(f"[WARNING] Brak danych dla {asset}.")
 
             except requests.exceptions.HTTPError as http_err:
                 print(f"[ERROR] Błąd HTTP dla {asset}: {http_err}")
             except Exception as e:
                 print(f"[ERROR] Inny błąd dla {asset}: {e}")
+
+        last_request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        time.sleep(300)  # 5 minut przerwy
+
 
         last_request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(300)  # 5 minut przerwy
