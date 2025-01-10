@@ -4,3 +4,4 @@ beautifulsoup4
 plotly
 matplotlib
 gunicorn
+os
