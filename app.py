@@ -16,6 +16,7 @@ def index():
     return render_template("index.html", assets=scraper.asset_list, current_values=scraper.current_values)
 
 
+
 @app.route("/status")
 def status():
     return jsonify({
