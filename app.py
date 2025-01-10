@@ -12,7 +12,9 @@ start_scraper()  # Scraper uruchamiany przy starcie aplikacji
 
 @app.route("/")
 def index():
+    print(f"[DEBUG] Aktualne dane przekazywane do widoku: {scraper.current_values}")
     return render_template("index.html", assets=scraper.asset_list, current_values=scraper.current_values)
+
 
 @app.route("/status")
 def status():
