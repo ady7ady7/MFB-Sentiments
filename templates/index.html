@@ -31,12 +31,28 @@
             {% for asset in assets %}
                 <div class="sentiment-data">
                     <h3>{{ asset }}</h3>
-                    <p>Long: <span class="long">{{ current_values[asset]["long"] }}%</span></p>
-                    <p>Short: <span class="short">{{ current_values[asset]["short"] }}%</span></p>
+                    <p>Long: <span class="long">{{ current_values[asset]["long"] }}</span></p>
+                    <p>Short: <span class="short">{{ current_values[asset]["short"] }}</span></p>
                 </div>
             {% endfor %}
         </div>
     </div>
 
+    <script>
+        async function fetchStatus() {
+            try {
+                const response = await fetch("/status");
+                const data = await response.json();
+                document.getElementById('last-update').textContent = data.last_update || "Brak danych";
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        }
 
+        // Odpytuj serwer co 5 sekund
+        setInterval(fetchStatus, 5000);
+        fetchStatus();
+    </script>
+</body>
+</html>
 
