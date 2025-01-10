@@ -10,6 +10,14 @@
             font-family: 'Outfit';
             src: url('{{ url_for('static', filename='Outfit-Regular.ttf') }}') format('truetype');
         }
+        .long {
+            color: lime;
+            font-weight: bold;
+        }
+        .short {
+            color: red;
+            font-weight: bold;
+        }
         #update-info {
             margin: 10px 0;
             font-size: 18px;
@@ -19,28 +27,37 @@
             font-size: 20px;
             color: lime;
         }
+        .sentiment-data {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Sentymenty MYFXBOOK Live</h1>
-        <p>Wykresy aktualizują się co 5 minut, bazują na pozycjach live z kont podpiętych pod MYFXBOOK</p>
+        <p>Aktualizacja danych co <span id="refresh-time">{{ refresh_minutes }}</span> minut, na podstawie pozycji live z MYFXBOOK</p>
 
         <div id="update-info">
             <p>Ostatnia aktualizacja: <span id="last-update">Ładowanie...</span></p>
             <p>Kolejna aktualizacja za: <span id="countdown">05:00</span></p>
         </div>
 
-        {% for asset in assets %}
-            <div class="plot-container">
-                <h2>{{ asset }}</h2>
-                <iframe src="/tmp/{{ asset }}_plot.html"></iframe>
-            </div>
-        {% endfor %}
+        <div>
+            {% for asset in assets %}
+                <div class="sentiment-data">
+                    <h3>{{ asset }}</h3>
+                    <p>Long: <span class="long">{{ current_values[asset]["long"] }}%</span></p>
+                    <p>Short: <span class="short">{{ current_values[asset]["short"] }}%</span></p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
-        let refreshIntervalMinutes = 5;  // Domyślny czas odświeżania w minutach
+        let refreshIntervalMinutes = {{ refresh_minutes }};
         let refreshIntervalSeconds = refreshIntervalMinutes * 60;
 
         async function fetchStatus() {
@@ -48,16 +65,13 @@
                 const response = await fetch("/status");
                 const data = await response.json();
 
-                // Ustawienie czasu ostatniej aktualizacji z serwera
                 const lastUpdateTime = new Date(data.last_update);
                 document.getElementById('last-update').textContent = lastUpdateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-                // Przeliczenie czasu do odświeżenia
                 refreshIntervalSeconds = data.refresh_interval * 60;
                 const now = new Date();
                 let countdownSeconds = refreshIntervalSeconds - Math.floor((now - lastUpdateTime) / 1000);
 
-                // Odliczanie czasu
                 function updateCountdown() {
                     countdownSeconds -= 1;
                     const minutes = String(Math.floor(countdownSeconds / 60)).padStart(2, '0');
@@ -75,9 +89,9 @@
             }
         }
 
-        // Odpytuj serwer co 5 sekund, aby aktualizować czas ostatniej aktualizacji
         setInterval(fetchStatus, 5000);
-        fetchStatus();  // Pierwsze wywołanie od razu
+        fetchStatus();
     </script>
 </body>
 </html>
+
