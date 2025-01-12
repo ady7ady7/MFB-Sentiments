@@ -6,15 +6,17 @@ import scraper
 
 app = Flask(__name__)
 
-# Start scrapera w tle
-def start_scraper():
-    threading.Thread(target=scraper.run_scraper, daemon=True).start()
+def start_all_scrapers():
+    # Uruchamianie scraperów z różnymi opóźnieniami
+    threading.Thread(target=scraper.run_scraper_for_assets, args=(scraper.assets1, 0), daemon=True).start()  # Bez opóźnienia
+    threading.Thread(target=scraper.run_scraper_for_assets, args=(scraper.assets2, 0), daemon=True).start()  # 1.5 minuty opóźnienia
+    threading.Thread(target=scraper.run_scraper_for_assets, args=(scraper.assets3, 0), daemon=True).start()  # 3 minuty opóźnienia
 
-start_scraper()
+start_all_scrapers()
 
 @app.route("/")
 def index():
-    return render_template("index.html", assets=scraper.asset_list)
+    return render_template("index.html", assets=scraper.all_assets)
 
 @app.route("/get-plot-data/<asset>")
 def get_plot_data(asset):
@@ -44,7 +46,7 @@ def get_plot_data(asset):
         font=dict(color="white"),
         autosize=True,
         margin=dict(l=20, r=20, t=20, b=20),
-        yaxis=dict(range=[-5, 105], tickmode='linear', dtick=10, showgrid=True, zeroline=False)
+        yaxis=dict(range=[-5, 105], tickmode='linear', dtick=10, showgrid=True, zeroline=False
     )
 
     return fig.to_json()
