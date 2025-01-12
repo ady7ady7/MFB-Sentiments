@@ -10,12 +10,20 @@
 <body>
     <div class="container">
         <h1>Sentymenty MYFXBOOK Live</h1>
-        <p>Wykresy aktualizują się co 5 minut</p>
+        <p>Wykresy aktualizują się co 5 minut dla każdej grupy.</p>
+
+        <div id="updates-container">
+            <h3>Czasy aktualizacji grup:</h3>
+            <p>Ostatnia aktualizacja dla grupy 1 (assets1): <span id="group1-time">Ładowanie...</span></p>
+            <p>Ostatnia aktualizacja dla grupy 2 (assets2): <span id="group2-time">Ładowanie...</span></p>
+            <p>Ostatnia aktualizacja dla grupy 3 (assets3): <span id="group3-time">Ładowanie...</span></p>
+        </div>
 
         <div id="plots-container">
+            <h2>Wykresy aktywów</h2>
             {% for asset in assets %}
                 <div class="plot-container">
-                    <h2>{{ asset }}</h2>
+                    <h3>{{ asset }}</h3>
                     <div id="plot-{{ asset }}"></div>
                 </div>
             {% endfor %}
@@ -24,9 +32,26 @@
 
     <script>
         async function fetchPlotData(asset) {
-            const response = await fetch(`/get-plot-data/${asset}`);
-            const data = await response.json();
-            Plotly.newPlot(`plot-${asset}`, data.data, data.layout);
+            try {
+                const response = await fetch(`/get-plot-data/${asset}`);
+                const data = await response.json();
+                Plotly.newPlot(`plot-${asset}`, data.data, data.layout);
+            } catch (error) {
+                console.error(`Błąd pobierania danych dla ${asset}:`, error);
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch("/status");
+                const data = await response.json();
+
+                document.getElementById('group1-time').textContent = data.last_update_times.group1 || "Brak danych";
+                document.getElementById('group2-time').textContent = data.last_update_times.group2 || "Brak danych";
+                document.getElementById('group3-time').textContent = data.last_update_times.group3 || "Brak danych";
+            } catch (error) {
+                console.error("Błąd pobierania statusu grup:", error);
+            }
         }
 
         function updateAllPlots() {
@@ -37,7 +62,12 @@
         // Aktualizuj wykresy co 5 minut
         setInterval(updateAllPlots, 300000);  // 300000 ms = 5 minut
         updateAllPlots();  // Wywołanie przy starcie
+
+        // Aktualizuj czasy aktualizacji co 5 sekund
+        setInterval(fetchStatus, 5000);
+        fetchStatus();
     </script>
 </body>
 </html>
+
 
