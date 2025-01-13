@@ -57,6 +57,7 @@ def run_scraper_for_group(assets, group_name):
             except Exception as e:
                 print(f"[ERROR] Inny błąd dla {asset}: {e}")
 
-        # Odczekaj 5 minut przed kolejną aktualizacją tej grupy
-        time.sleep(300)
+        # Odczekaj 15 minut dla tej grupy
+        time.sleep(900)  # 900 sekund = 15 minut
+
 
