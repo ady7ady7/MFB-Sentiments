@@ -46,7 +46,13 @@ def get_plot_data(asset):
         font=dict(color="white"),
         autosize=True,
         margin=dict(l=20, r=20, t=20, b=20),
-        yaxis=dict(range=[-5, 105], tickmode='linear', dtick=10, showgrid=True, zeroline=False
+        yaxis=dict(
+            range=[-5, 105],
+            tickmode='linear',
+            dtick=10,
+            showgrid=True,
+            zeroline=False
+        )  # Zamknięcie słownika yaxis
     )
 
     return fig.to_json()
