@@ -2,6 +2,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import pytz  # Import pytz do obsługi stref czasowych
 
 # Grupy assetów
 assets1 = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "XAUUSD"]
@@ -16,12 +17,16 @@ long_values = {asset: [] for asset in all_assets}
 short_values = {asset: [] for asset in all_assets}
 last_update_times = {f"group{i}": None for i in range(1, 4)}
 
+# Strefa czasowa UTC+1 (Europe/Warsaw)
+timezone = pytz.timezone('Europe/Warsaw')
+
 def run_scraper_for_group(assets, group_name):
     """Funkcja scrapująca dla jednej grupy assetów."""
     global last_update_times
     while True:
-        print(f"[INFO] Aktualizacja grupy {group_name}: {assets}")
-        last_update_times[group_name] = datetime.now().strftime("%H:%M:%S")
+        current_time = datetime.now(timezone).strftime("%H:%M:%S")  # Czas w UTC+1
+        print(f"[INFO] Aktualizacja grupy {group_name} o {current_time}: {assets}")
+        last_update_times[group_name] = current_time
         for asset in assets:
             url = f"https://www.myfxbook.com/community/outlook/{asset}"
             headers = {"User-Agent": "Mozilla/5.0"}
@@ -44,7 +49,7 @@ def run_scraper_for_group(assets, group_name):
                             new_short = int(cells[1].text.strip().replace('%', ''))
 
                 if new_long is not None and new_short is not None:
-                    current_time = datetime.now().strftime("%H:%M")
+                    current_time = datetime.now(timezone).strftime("%H:%M")
                     time_stamps[asset].append(current_time)
                     long_values[asset].append(new_long)
                     short_values[asset].append(new_short)
