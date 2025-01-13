@@ -22,8 +22,12 @@ start_all_scrapers()
 
 @app.route("/")
 def index():
-    return render_template("index.html", assets=scraper.all_assets)
-
+    return render_template("index.html",
+                           assets=scraper.all_assets,
+                           assets1=scraper.assets1,
+                           assets2=scraper.assets2,
+                           assets3=scraper.assets3)
+    
 @app.route("/get-plot-data/<asset>")
 def get_plot_data(asset):
     fig = go.Figure()
