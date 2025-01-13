@@ -10,17 +10,31 @@
 <body>
     <div class="container">
         <h1>Sentymenty MYFXBOOK Live</h1>
-        <p>Wykresy aktualizują się co 15 minut dla każdej grupy.</p>
+        <p>Wykresy aktualizują się co 15 minut w cyklu dla każdej grupy.</p>
 
         <div id="updates-container">
-            <h3>Czasy aktualizacji grup:</h3>
-            <p>Ostatnia aktualizacja dla grupy 1 (assets1): <span id="group1-time">Ładowanie...</span></p>
-            <p>Ostatnia aktualizacja dla grupy 2 (assets2): <span id="group2-time">Ładowanie...</span></p>
-            <p>Ostatnia aktualizacja dla grupy 3 (assets3): <span id="group3-time">Ładowanie...</span></p>
+            <h3>Grupy aktywów i czas aktualizacji:</h3>
+            <div class="group-info">
+                <h4>Grupa 1 (assets1)</h4>
+                <p>Aktywa: {{ ", ".join(assets1) }}</p>
+                <p>Ostatnia aktualizacja: <span id="group1-time">Ładowanie...</span></p>
+            </div>
+
+            <div class="group-info">
+                <h4>Grupa 2 (assets2)</h4>
+                <p>Aktywa: {{ ", ".join(assets2) }}</p>
+                <p>Ostatnia aktualizacja: <span id="group2-time">Ładowanie...</span></p>
+            </div>
+
+            <div class="group-info">
+                <h4>Grupa 3 (assets3)</h4>
+                <p>Aktywa: {{ ", ".join(assets3) }}</p>
+                <p>Ostatnia aktualizacja: <span id="group3-time">Ładowanie...</span></p>
+            </div>
         </div>
 
+        <h2>Wykresy aktywów</h2>
         <div id="plots-container">
-            <h2>Wykresy aktywów</h2>
             {% for asset in assets %}
                 <div class="plot-container">
                     <h3>{{ asset }}</h3>
