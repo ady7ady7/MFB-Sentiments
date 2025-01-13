@@ -1,16 +1,22 @@
 import os
 from flask import Flask, render_template, jsonify
 import threading
+import time
 import plotly.graph_objects as go
 import scraper
 
 app = Flask(__name__)
 
+def start_scraper_with_delay(assets, group_name, delay):
+    """Uruchamia scraper dla grupy z opóźnieniem."""
+    time.sleep(delay)
+    threading.Thread(target=scraper.run_scraper_for_group, args=(assets, group_name), daemon=True).start()
+
 def start_all_scrapers():
-    """Uruchamianie scraperów dla wszystkich grup."""
-    threading.Thread(target=scraper.run_scraper_for_group, args=(scraper.assets1, "group1"), daemon=True).start()
-    threading.Thread(target=scraper.run_scraper_for_group, args=(scraper.assets2, "group2"), daemon=True).start()
-    threading.Thread(target=scraper.run_scraper_for_group, args=(scraper.assets3, "group3"), daemon=True).start()
+    """Uruchamianie scraperów dla wszystkich grup z odpowiednimi odstępami."""
+    threading.Thread(target=start_scraper_with_delay, args=(scraper.assets1, "group1", 0), daemon=True).start()  # Bez opóźnienia
+    threading.Thread(target=start_scraper_with_delay, args=(scraper.assets2, "group2", 300), daemon=True).start()  # 5 minut opóźnienia
+    threading.Thread(target=start_scraper_with_delay, args=(scraper.assets3, "group3", 600), daemon=True).start()  # 10 minut opóźnienia
 
 start_all_scrapers()
 
@@ -52,7 +58,7 @@ def get_plot_data(asset):
             dtick=10,
             showgrid=True,
             zeroline=False
-        )  # Zamknięcie słownika yaxis
+        )
     )
 
     return fig.to_json()
@@ -65,7 +71,7 @@ def status():
     })
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Pobieranie portu ze zmiennej środowiskowej lub domyślnie 5000
-    app.run(host="0.0.0.0", port=port, debug=False)  # Nasłuch na 0.0.0.0 dla wszystkich adresów sieciowych
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
 
 
