@@ -3,5 +3,4 @@ requests
 beautifulsoup4
 plotly
 matplotlib
-gunicorn
 pytz
