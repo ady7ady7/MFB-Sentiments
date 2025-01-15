@@ -20,6 +20,9 @@ last_update_times = {f"group{i}": None for i in range(1, 4)}
 # Strefa czasowa UTC+1 (Europe/Warsaw)
 timezone = pytz.timezone('Europe/Warsaw')
 
+# Maksymalna liczba punktów na wykresie
+MAX_POINTS = 50
+
 def run_scraper_for_group(assets, group_name):
     """Funkcja scrapująca dla jednej grupy assetów."""
     global last_update_times
@@ -53,6 +56,13 @@ def run_scraper_for_group(assets, group_name):
                     time_stamps[asset].append(current_time)
                     long_values[asset].append(new_long)
                     short_values[asset].append(new_short)
+
+                    # Przycinanie list do maksymalnie 50 punktów
+                    if len(time_stamps[asset]) > MAX_POINTS:
+                        time_stamps[asset] = time_stamps[asset][-MAX_POINTS:]
+                        long_values[asset] = long_values[asset][-MAX_POINTS:]
+                        short_values[asset] = short_values[asset][-MAX_POINTS:]
+
                     print(f"[INFO] {asset} - Long: {new_long}%, Short: {new_short}%")
                 else:
                     print(f"[WARNING] Brak danych dla {asset}.")
